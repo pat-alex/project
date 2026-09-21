@@ -155,7 +155,7 @@
 <body>
 
 <div class="topbar">
-  <h1>تسجيل الحضور بالمدرج</h1>
+  <h1>تسجيل الحضور </h1>
   <p>نظام التحقق الجغرافي الذكي</p>
 </div>
 
@@ -186,7 +186,7 @@
 
 <script>
   // رابط الـ API الخاص بـ Google Apps Script
-  const API_URL = "https://script.google.com/macros/s/AKfycbxvmCLL6ZMGCkmzIzIKiL5f109uhruT451hViEBZugFtYaPVEY0_hjxFTxqzjBCjLBj/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyyrl3w8qRsavj4TeOXe6Opu4cOefoqM9FlE3OMA_GkSzaEyzvh7QcE_Rg4uAC_4nPO/exec";
 
   // فحص المتصفح الداخلي عند التحميل
   window.onload = function() {
@@ -222,7 +222,7 @@
     }
 
     setLoading(true);
-    showMsg('جاري تحديد موقعك والتحقق من التواجد داخل المدرج...', 'success');
+    showMsg('جاري تحديد موقعك والتحقق من التواجد فى حدود المدرج...', 'success');
 
     // المحاولة الأولى: دقة عالية (High Accuracy)
     getGeoPosition(true, function(pos) {
