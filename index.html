@@ -170,8 +170,8 @@
       📍 يجب التواجد داخل حدود المدرج.
     </div>
 
-    <label>كود الطالب</label>
-    <input type="text" id="studentCode" placeholder="أدخل كود الطالب" inputmode="numeric">
+    <label>التخصص</label>
+    <input type="text" id="studentCode" placeholder="أدخل التخصص" inputmode="numeric">
 
     <label>اسم الطالب </label>
     <input type="text" id="studentName" placeholder="أدخل اسمك كاملا">
@@ -186,7 +186,7 @@
 
 <script>
   // رابط الـ API الخاص بـ Google Apps Script
-  const API_URL = "https://script.google.com/macros/s/AKfycbw-2XgFyB1Ai2_06pUgEDzlM6okX2utUjKuc-vMeIKZjsgx4a8kjbfXlK10jxPYVDI/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwExgoikditHc-oB5Huolx9r8lTROmIHw_K6RDhKJ7f49qtFPmcpLhXS6G-c7395_ZW/exec";
 
   // فحص المتصفح الداخلي عند التحميل
   window.onload = function() {
@@ -222,7 +222,7 @@
     }
 
     setLoading(true);
-    showMsg('جاري تحديد موقعك والتحقق من التواجد فى حدود المدرج...', 'success');
+    showMsg('جاري تحديد موقعك والتحقق من التواجد فى داخل المدرج...', 'success');
 
     // المحاولة الأولى: دقة عالية (High Accuracy)
     getGeoPosition(true, function(pos) {
