@@ -67,6 +67,10 @@
     outline: 2px solid var(--gold);
     background: #fff;
   }
+  input.input-error {
+    border-color: var(--danger);
+    background: #FCEEEC;
+  }
   button.btn-primary {
     width: 100%;
     padding: 14px;
@@ -170,9 +174,9 @@
     </div>
 
     <label>التخصص</label>
-    <input type="text" id="studentCode" placeholder="أدخل التخصص">
+    <input type="text" id="specialization" placeholder="أدخل التخصص">
 
-    <label>اسم الطالب </label>
+    <label>اسم الطالب</label>
     <input type="text" id="studentName" placeholder="أدخل اسمك كاملا">
 
     <button id="submitBtn" class="btn-primary" onclick="submitAttendance('حضور')">
@@ -185,7 +189,7 @@
 
 <script>
   // رابط الـ API الخاص بـ Google Apps Script
-  const API_URL = "https://script.google.com/macros/s/AKfycbw51W9zdWPZTRlI_yli2w0GTnR1v0aJ1SetL4t7Z91O2R0UclVsVmeUGyj_wZP0_OMT/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwYLYWCr-9rYN56wxS1pORgD2B3OeC-jaKAFRCDYuSTkygyGzmPRYgGRA7WmrZDmucI/exec";
 
   // فحص المتصفح الداخلي عند التحميل
   window.onload = function() {
@@ -206,12 +210,33 @@
     return id;
   }
 
-  function submitAttendance(type) {
-    const code = document.getElementById('studentCode').value.trim();
-    const name = document.getElementById('studentName').value.trim();
+  function clearFieldErrors() {
+    document.getElementById('specialization').classList.remove('input-error');
+    document.getElementById('studentName').classList.remove('input-error');
+  }
 
-    if (!code) {
-      showMsg('يرجى كتابة كود الطالب أولاً', 'error');
+  function submitAttendance(type) {
+    const specializationEl = document.getElementById('specialization');
+    const studentNameEl = document.getElementById('studentName');
+    const specialization = specializationEl.value.trim();
+    const name = studentNameEl.value.trim();
+
+    clearFieldErrors();
+
+    if (!specialization && !name) {
+      specializationEl.classList.add('input-error');
+      studentNameEl.classList.add('input-error');
+      showMsg('يرجى كتابة التخصص واسم الطالب', 'error');
+      return;
+    }
+    if (!specialization) {
+      specializationEl.classList.add('input-error');
+      showMsg('يرجى كتابة التخصص أولاً', 'error');
+      return;
+    }
+    if (!name) {
+      studentNameEl.classList.add('input-error');
+      showMsg('يرجى كتابة اسم الطالب', 'error');
       return;
     }
 
@@ -225,11 +250,11 @@
 
     // المحاولة الأولى: دقة عالية (High Accuracy)
     getGeoPosition(true, function(pos) {
-      sendData(pos, type, code, name);
+      sendData(pos, type, specialization, name);
     }, function() {
       // محاولة ثانية بدقة عادية في حال فشل الأولى
       getGeoPosition(false, function(pos) {
-        sendData(pos, type, code, name);
+        sendData(pos, type, specialization, name);
       }, function(err) {
         setLoading(false);
         handleGeoError(err);
@@ -245,10 +270,10 @@
     });
   }
 
-  function sendData(pos, type, code, name) {
+  function sendData(pos, type, specialization, name) {
     const params = {
       action: 'submitLocationAttendance',
-      studentCode: code,
+      specialization: specialization,
       studentName: name,
       type: type,
       lat: pos.coords.latitude,
