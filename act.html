@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>تسجيل الحضور </title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1E4638;
+    --primary-light: #2C5C4A;
+    --bg: #F2F4EE;
+    --card: #FFFFFF;
+    --gold: #C98A2C;
+    --danger: #B24A3C;
+    --text: #16211C;
+    --border: #DDE0D3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    direction: rtl;
+  }
+  .topbar {
+    background: var(--primary);
+    color: #fff;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .topbar h1 { margin: 0; font-size: 20px; font-weight: 800; }
+  .topbar p { margin: 6px 0 0; font-size: 13px; opacity: 0.9; }
+
+  .container {
+    max-width: 440px;
+    margin: 20px auto;
+    padding: 0 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 12px 0 6px;
+  }
+  input[type=text] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FAFAFA;
+    font-family: inherit;
+  }
+  input:focus {
+    outline: 2px solid var(--gold);
+    background: #fff;
+  }
+  input.input-error {
+    border-color: var(--danger);
+    background: #FCEEEC;
+  }
+  button.btn-primary {
+    width: 100%;
+    padding: 14px;
+    margin-top: 18px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button.btn-primary:active {
+    background: var(--primary-light);
+  }
+  button:disabled {
+    background: #94A3B8;
+    cursor: not-allowed;
+  }
+  .info-box {
+    background: #E8F0EC;
+    border-right: 4px solid var(--primary);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .warning-box {
+    background: #FFF4E5;
+    border-right: 4px solid var(--gold);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #663C00;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .time-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #fff;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .msg-box {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    display: none;
+  }
+  .msg-success {
+    background: #E6F4EA;
+    color: #137333;
+    border: 1px solid #CEEAD6;
+    display: block;
+  }
+  .msg-error {
+    background: #FCE8E6;
+    color: #C5221F;
+    border: 1px solid #FAD2CF;
+    display: block;
+  }
+  .loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #FFF;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1> تسجيل الحضور بالمدرج </h1>
+  <p>نظام التحقق الجغرافي الذكي</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div id="inAppWarning" class="warning-box">
+      ⚠️ إذا كنت تفتح الرابط من داخل الواتساب أو الفيسبوك، اضغط على (⋮) بالفي الأعلى واختر <b>"فتح في المتصفح / Open in Chrome"</b> لضمان عمل الـ GPS.
+    </div>
+
+    <div class="info-box">
+      📍 يجب التواجد داخل المدرج.
+    </div>
+
+    <label>التخصص</label>
+    <input type="text" id="specialization" placeholder="أدخل التخصص">
+
+    <label>اسم الطالب</label>
+    <input type="text" id="studentName" placeholder="أدخل اسمك كاملا">
+
+    <button id="submitBtn" class="btn-primary" onclick="submitAttendance('حضور')">
+      <span id="btnText">تسجيل الحضور الآن</span>
+    </button>
+
+    <div id="statusMsg" class="msg-box"></div>
+  </div>
+</div>
+
+<script>
+  // رابط الـ API الخاص بـ Google Apps Script
+  const API_URL = "https://script.google.com/macros/s/AKfycbw51W9zdWPZTRlI_yli2w0GTnR1v0aJ1SetL4t7Z91O2R0UclVsVmeUGyj_wZP0_OMT/exec";
+
+  // فحص المتصفح الداخلي عند التحميل
+  window.onload = function() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    if (ua.indexOf("FBAN") > -1 || ua.indexOf("FBAV") > -1 || ua.indexOf("WhatsApp") > -1) {
+      document.getElementById('inAppWarning').style.display = 'block';
+    }
+  };
+
+  // جلب أو توليد معرف الموبايل الفريد
+  function getDeviceId() {
+    let id = localStorage.getItem('deviceId');
+    if (!id) {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() :
+        'dev-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+      localStorage.setItem('deviceId', id);
+    }
+    return id;
+  }
+
+  function clearFieldErrors() {
+    document.getElementById('specialization').classList.remove('input-error');
+    document.getElementById('studentName').classList.remove('input-error');
+  }
+
+  function submitAttendance(type) {
+    const specializationEl = document.getElementById('specialization');
+    const studentNameEl = document.getElementById('studentName');
+    const specialization = specializationEl.value.trim();
+    const name = studentNameEl.value.trim();
+
+    clearFieldErrors();
+
+    if (!specialization && !name) {
+      specializationEl.classList.add('input-error');
+      studentNameEl.classList.add('input-error');
+      showMsg('يرجى كتابة التخصص واسم الطالب', 'error');
+      return;
+    }
+    if (!specialization) {
+      specializationEl.classList.add('input-error');
+      showMsg('يرجى كتابة التخصص أولاً', 'error');
+      return;
+    }
+    if (!name) {
+      studentNameEl.classList.add('input-error');
+      showMsg('يرجى كتابة اسم الطالب', 'error');
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      showMsg('المتصفح لا يدعم تحديد الموقع الجغرافي', 'error');
+      return;
+    }
+
+    setLoading(true);
+    showMsg('جاري تحديد موقعك والتحقق من التواجد داخل المدرج...', 'success');
+
+    // المحاولة الأولى: دقة عالية (High Accuracy)
+    getGeoPosition(true, function(pos) {
+      sendData(pos, type, specialization, name);
+    }, function() {
+      // محاولة ثانية بدقة عادية في حال فشل الأولى
+      getGeoPosition(false, function(pos) {
+        sendData(pos, type, specialization, name);
+      }, function(err) {
+        setLoading(false);
+        handleGeoError(err);
+      });
+    });
+  }
+
+  function getGeoPosition(highAccuracy, successCb, errorCb) {
+    navigator.geolocation.getCurrentPosition(successCb, errorCb, {
+      enableHighAccuracy: highAccuracy,
+      timeout: 12000,
+      maximumAge: 0
+    });
+  }
+
+  function sendData(pos, type, specialization, name) {
+    const params = {
+      action: 'submitLocationAttendance',
+      specialization: specialization,
+      studentName: name,
+      type: type,
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      accuracy: pos.coords.accuracy,
+      deviceId: getDeviceId()
+    };
+
+    const query = new URLSearchParams(params).toString();
+
+    fetch(`${API_URL}?${query}`)
+      .then(res => res.json())
+      .then(json => {
+        setLoading(false);
+        if (json.success) {
+          showMsg(json.data.message, 'success');
+        } else {
+          showMsg(json.error, 'error');
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        showMsg('تعذر الاتصال بالخادم، تأكد من الاتصال بالإنترنت.', 'error');
+      });
+  }
+
+  function handleGeoError(err) {
+    if (err.code === 1) {
+      showMsg('يرجى التأكد من تفعيل إذن الموقع (Location Permission) للمتصفح من إعدادات الهاتف.', 'error');
+    } else if (err.code === 2) {
+      showMsg('تعذر تحديد موقعك، يرجى التأكد من تشغيل الـ GPS والإشارة.', 'error');
+    } else {
+      showMsg('استغرق تحديد الموقع وقتاً طويلاً، يرجى إعادة المحاولة.', 'error');
+    }
+  }
+
+  function showMsg(text, type) {
+    const msgEl = document.getElementById('statusMsg');
+    msgEl.textContent = text;
+    msgEl.className = 'msg-box ' + (type === 'success' ? 'msg-success' : 'msg-error');
+  }
+
+  function setLoading(isLoading) {
+    const btn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    btn.disabled = isLoading;
+    if (isLoading) {
+      btnText.innerHTML = 'جاري التحقق... <span class="loader"></span>';
+    } else {
+      btnText.textContent = 'تسجيل الحضور الآن';
+    }
+  }
+</script>
+</body>
+</html>
