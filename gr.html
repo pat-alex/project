@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title> حضور مقرر مشروع تخرج 2026-2027 </title>
+<title> حضور مقرر بحوث الفعل 2026-2027  </title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #1B3A5C;
-    --primary-light: #2A5588;
-    --bg: #EEF2F7;
+    --primary: #1E4638;
+    --primary-light: #2C5C4A;
+    --bg: #F2F4EE;
     --card: #FFFFFF;
-    --gold: #D9722B;
-    --danger: #B2403C;
-    --text: #16201C;
-    --border: #D6DDE6;
+    --gold: #C98A2C;
+    --danger: #B24A3C;
+    --text: #16211C;
+    --border: #DDE0D3;
   }
   * { box-sizing: border-box; }
   body {
@@ -93,13 +93,23 @@
     cursor: not-allowed;
   }
   .info-box {
-    background: #E6ECF4;
+    background: #E8F0EC;
     border-right: 4px solid var(--primary);
     padding: 12px;
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.6;
     margin-bottom: 16px;
+  }
+  .precision-box {
+    background: #EAF1FB;
+    border-right: 4px solid #2C5C8A;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #1B3A5C;
+    margin-bottom: 12px;
   }
   .warning-box {
     background: #FFF4E5;
@@ -159,7 +169,7 @@
 <body>
 
 <div class="topbar">
-  <h1> حضور مقرر مشروع تخرج 2026-2027 </h1>
+  <h1> حضور مقرر بحوث الفعل 2026-2027 </h1>
   <p>نظام التحقق الجغرافي الذكي</p>
 </div>
 
@@ -167,6 +177,10 @@
   <div class="card">
     <div id="inAppWarning" class="warning-box">
       ⚠️ إذا كنت تفتح الرابط من داخل الواتساب أو الفيسبوك، اضغط على (⋮) بالفي الأعلى واختر <b>"فتح في المتصفح / Open in Chrome"</b> لضمان عمل الـ GPS.
+    </div>
+
+    <div class="precision-box">
+      📍عند ظهور نافذة إذن الموقع، اختار <b>"Precise / دقيق"</b> مش <b>"Approximate / تقريبي"</b>، وإلا لن يتمكن التطبيق من تحديد موقعك حتى مع وجودك داخل المدرج.
     </div>
 
     <div class="info-box">
@@ -189,7 +203,10 @@
 
 <script>
   // رابط الـ API الخاص بـ Google Apps Script
-  const API_URL = "https://script.google.com/macros/s/AKfycbwrdpSY0uCIUEV7sd0oaFHoYjh-pgmmkYxCAnQ4j0tdx12w0EkW8KTVyFni1kYVhfWa2w/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbz_Wks8FE8hAiABhoREmIHTnp7TyGRYNpDzeiENxi9_b7oJf2siSMgnVQc2Bp5qU9lx/exec";
+
+  // أقصى قيمة دقة (بالمتر) نقبلها من متصفح الطالب - أي رقم أكبر من كده معناه على الأغلب اختار "تقريبي"
+  const MAX_ACCEPTABLE_ACCURACY_METERS = 100;
 
   // فحص المتصفح الداخلي عند التحميل
   window.onload = function() {
@@ -250,11 +267,11 @@
 
     // المحاولة الأولى: دقة عالية (High Accuracy)
     getGeoPosition(true, function(pos) {
-      sendData(pos, type, specialization, name);
+      handlePosition(pos, type, specialization, name);
     }, function() {
       // محاولة ثانية بدقة عادية في حال فشل الأولى
       getGeoPosition(false, function(pos) {
-        sendData(pos, type, specialization, name);
+        handlePosition(pos, type, specialization, name);
       }, function(err) {
         setLoading(false);
         handleGeoError(err);
@@ -268,6 +285,22 @@
       timeout: 12000,
       maximumAge: 0
     });
+  }
+
+  // فحص دقة القراءة قبل ما نبعتها للسيرفر خالص - لو ضعيفة جدًا يبقى الطالب على الأغلب اختار "تقريبي"
+  function handlePosition(pos, type, specialization, name) {
+    const accuracy = pos.coords.accuracy;
+    if (accuracy > MAX_ACCEPTABLE_ACCURACY_METERS) {
+      setLoading(false);
+      showMsg(
+        'دقة تحديد موقعك ضعيفة جدًا (حوالي ' + Math.round(accuracy) + ' متر). ' +
+        'على الأغلب اخترت "Approximate / تقريبي" وقت إذن الموقع. ' +
+        'من فضلك أعد تحميل الصفحة واختر "Precise / دقيق" هذه المرة، ثم حاول مرة أخرى.',
+        'error'
+      );
+      return;
+    }
+    sendData(pos, type, specialization, name);
   }
 
   function sendData(pos, type, specialization, name) {
